@@ -26,7 +26,7 @@ This packages is dependent upon [ft232-bme280](https://github.com/jumbledbytes/f
 
 Download the latest version of this package from GitHub:
 
-Link TBD
+Link https://github.com/jumbledbytes/ft232-bme280-weewx/archive/v1.0.0.zip
 
 Run the `wee_extension` installation:
 
