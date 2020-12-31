@@ -21,12 +21,12 @@ class FT232BME280Installer(ExtensionInstaller):
                     'deviceURI': 'ftdi://ftdi:232h/1',
                     'busFrequency': 100000,
                     'usUnits': 'US',
-                    'temperatureKeys': 'inTemp',
-                    'temperatureRequiredValues': '',
-                    'pressureKeys': 'pressure',
-                    'pressureRequiredValues': 'outTemp',
-                    'humidityKeys': 'inHumidity',
-                    'humidityRequiredValues': ''
+                    'temperatureKeys': ['inTemp'],
+                    'temperatureRequiredValues': [],
+                    'pressureKeys': ['pressure'],
+                    'pressureRequiredValues': ['outTemp'],
+                    'humidityKeys': ['inHumidity'],
+                    'humidityRequiredValues': []
                 }
             },
             files=[('bin/user', ['bin/user/ft232bme280.py'])]
