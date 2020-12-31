@@ -55,6 +55,10 @@ class FT232BME280(StdService):
         self.bme280Reader = BME280Reader(self.bme280Config)
         self.bme280Reader.connect()
 
+        # Do one initial read as the first values returned from the sensor
+        # are often bogus
+        self.bme280Reader.read()
+
         # This is last to make sure all the other stuff is ready to go
         # (avoid race condition)
         self.bind(weewx.NEW_LOOP_PACKET, self.newLoopPacket)
@@ -78,7 +82,7 @@ class FT232BME280(StdService):
             converter = weewx.units.StdUnitConverters[self.bme280Config.defaultUnits]
 
         if all(mustHave in packet for mustHave in self.bme280Config.pressureRequiredValues) or len(self.bme280Config.pressureRequiredValues) == 0:
-            pressurePA = (dataRecord.pressure, 'mbar', 'group_pressure')
+            pressurePA = (dataRecord.pressure / 100, 'hPa', 'group_pressure')
             converted = converter.convert(pressurePA)
             for key in self.bme280Config.pressureKeys:
                 packet[key] = converted[0]
