@@ -21,9 +21,9 @@ class BME280ConfigWeewx(BME280Config):
         # Add Weewx specific configuration
         self.defaultUnits: str = "US"
         self.temperatureKeys: list = ["inTemp"]
-        self.temperatureRequiredValues: list = [""]
+        self.temperatureRequiredValues: list = []
         self.humidityKeys: list = ["inHumidity"]
-        self.humidityRequiredValues: list = [""]
+        self.humidityRequiredValues: list = []
         self.pressureKeys: list = ["pressureKeys"]
         self.pressureRequiredValues: list = ["'outTemp'"]
 
@@ -66,7 +66,7 @@ class FT232BME280(StdService):
             self.bme280Reader.connect()
 
         dataRecord = self.bme280Reader.read()
-        log(LogLevel.INFO, 'read data %s' % dataRecord.string())
+        log(LogLevel.INFO, 'BME280 data %s' % dataRecord.string())
 
         if dataRecord is None:
             return
@@ -77,23 +77,23 @@ class FT232BME280(StdService):
         else:
             converter = weewx.units.StdUnitConverters[self.bme280Config.defaultUnits]
 
-        if all(must_have in packet for must_have in self.bme280Config.pressureRequiredValues):
+        if all(mustHave in packet for mustHave in self.bme280Config.pressureRequiredValues) or len(self.bme280Config.pressureRequiredValues) == 0:
             pressurePA = (dataRecord.pressure, 'mbar', 'group_pressure')
             converted = converter.convert(pressurePA)
             for key in self.bme280Config.pressureKeys:
                 packet[key] = converted[0]
 
-        if all(must_have in packet for must_have in self.bme280Config.temperatureRequiredValues):
+        if all(mustHave in packet for mustHave in self.bme280Config.temperatureRequiredValues) or len(self.bme280Config.temperatureRequiredValues) == 0:
             temperatureC = (dataRecord.temperature,
                             'degree_C', 'group_temperature')
             converted = converter.convert(temperatureC)
             for key in self.bme280Config.temperatureKeys:
                 packet[key] = converted[0]
 
-        if all(must_have in packet for must_have in self.bme280Config.humidityRequiredValues):
+        if all(mustHave in packet for mustHave in self.bme280Config.humidityRequiredValues) or len(self.bme280Config.humidityRequiredValues) == 0:
             humidityPCT = (dataRecord.humidity, 'percent', 'group_percent')
             converted = converter.convert(humidityPCT)
             for key in self.bme280Config.humidityKeys:
                 packet[key] = converted[0]
 
-        log(LogLevel.DEBUG, packet)
+        log(LogLevel.DEBUG, "BME280 Packet: %s" % packet)
